@@ -1,12 +1,11 @@
-package com.example.rssnews.repo
+package com.example.rssnews.data.source.remote
 
+import com.example.rssnews.data.Article
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
-import retrofit2.http.GET
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Root(name = "rss", strict = false)
 class Rss {
@@ -18,6 +17,7 @@ class Rss {
 class Channel {
     @field:Element(name = "title")
     var title: String? = null
+
     @field:ElementList(inline = true, required = false)
     var items: MutableList<Item>? = null
 }
@@ -26,39 +26,34 @@ class Channel {
 class Item {
     @field:Element(name = "title")
     var title: String? = null
+
     @field:Element(name = "link")
     var link: String? = null
+
     @field:Element(name = "creator")
     var creator: String? = null
+
     @field:ElementList(inline = true, required = false)
     var categories: MutableList<String>? = null
+
     @field:Element(name = "description")
     var description: String? = null
+
+    @field:Element(name = "pubDate")
+    var pubDate: String? = null
 }
 
+fun MutableList<Item>.convertAllToModel(): MutableList<Article> = this.map { i ->
+    convertToModel(i)
+} as MutableList<Article>
 
-interface RssService {
-    @GET("feed/")
-    fun getFeed(): Call<Rss>
-}
-
-class Service {
-    companion object {
-        fun create(): RssService {
-
-            val retrofit = Retrofit.Builder()
-                .addConverterFactory(
-                    SimpleXmlConverterFactory.create()
-                )
-                .baseUrl("https://blog.humblebundle.com/")
-                .build()
-
-            return retrofit.create(RssService::class.java)
-        }
-    }
-
-
-}
-
-
-
+private fun convertToModel(serverModel: Item): Article =
+    Article(
+        serverModel.title ?: "",
+        serverModel.link ?: "",
+        serverModel.creator ?: "",
+        serverModel.categories ?: listOf(""),
+        serverModel.description ?: "",
+//            SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").parse(serverModel.pubDate)
+        LocalDateTime.parse(serverModel.pubDate, DateTimeFormatter.RFC_1123_DATE_TIME)
+    )
