@@ -4,7 +4,7 @@ import com.example.rssnews.data.Article
 
 class ArticleRepository private constructor() {
     private lateinit var articles: MutableList<Article>
-    fun getArticles(): MutableList<Article> = articles
+    fun getArticles(): List<Article> = articles
 
     companion object {
         private var instance: ArticleRepository? = null
