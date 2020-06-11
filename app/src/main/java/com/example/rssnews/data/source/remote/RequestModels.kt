@@ -49,6 +49,7 @@ fun MutableList<Item>.convertAllToModel(): MutableList<Article> = this.map { i -
 
 private fun convertToModel(serverModel: Item): Article =
     Article(
+        null,
         serverModel.title ?: "",
         serverModel.link ?: "",
         serverModel.creator ?: "",
