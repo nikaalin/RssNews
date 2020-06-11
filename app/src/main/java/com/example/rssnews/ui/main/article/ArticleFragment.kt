@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rssnews.R
+import com.example.rssnews.data.Article
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -32,13 +33,23 @@ class ArticleFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        var articles: List<Article>
+
+
         viewModel = ViewModelProviders.of(this).get(ArticleViewModel::class.java)
 
+        swipeRefresh.setOnRefreshListener{
+            swipeRefresh.isRefreshing = true
+            CoroutineScope(IO).launch {
+                articles = viewModel.getArticles()
+                swipeRefresh.isRefreshing = false
+            }
+        }
+
         CoroutineScope(IO).launch {
-            val articles = viewModel.getArticles()
+            articles = viewModel.getArticles()
 
             launch(Main) {
-
                 listView.apply {
                     layoutManager = LinearLayoutManager(activity)
                     adapter = ArticleAdapter(articles)
