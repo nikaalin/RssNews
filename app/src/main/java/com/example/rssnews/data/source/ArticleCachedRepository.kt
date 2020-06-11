@@ -10,13 +10,16 @@ import com.example.rssnews.data.source.local.ArticleLocalSource
 import com.example.rssnews.data.source.remote.ArticleRemoteSource
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 
 
 object ArticleCachedRepository : ArticleSource {
+    var isNetworkConnected: Boolean = false
+    var lastUpdateTime: LocalDateTime? = null
+
     private val remoteSource = ArticleRemoteSource()
     private val localSource = ArticleLocalSource(RssApplication.getAppContext()!!)
 
-    private var isNetworkConnected: Boolean = false
     private var localData: List<Article>? = null
 
     init {
@@ -25,17 +28,25 @@ object ArticleCachedRepository : ArticleSource {
 
     override suspend fun getArticles(): List<Article> {
         if (isNetworkConnected) {
-            localData = remoteSource.getArticles()
-            localSource.saveArticles(localData!!)
-        }
-        if (localData == null) {
-            localData = withContext(IO) {
-                localSource.getArticles()
-            }
+            updateRepositoryByRemote()
+        } else if (localData == null) {
+            updateRepositoryByLocal()
         }
         return localData!!
     }
 
+
+    private suspend fun updateRepositoryByRemote() {
+        lastUpdateTime = LocalDateTime.now()
+        localData = remoteSource.getArticles()
+        localSource.saveArticles(localData!!)
+    }
+
+    private suspend fun updateRepositoryByLocal() {
+        localData = withContext(IO) {
+            localSource.getArticles()
+        }
+    }
 
     private fun registerNetworkCallback() {
         try {
