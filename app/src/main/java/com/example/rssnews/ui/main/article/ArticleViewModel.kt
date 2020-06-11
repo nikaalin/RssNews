@@ -3,8 +3,7 @@ package com.example.rssnews.ui.main.article
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.rssnews.data.Article
-import com.example.rssnews.data.source.ArticleRepository
-import com.example.rssnews.data.source.remote.ArticleRemoteSource
+import com.example.rssnews.data.source.ArticleCachedRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,9 +13,11 @@ class ArticleViewModel : ViewModel() {
 
     private suspend fun setArticles() {
         articles =
-            MutableLiveData(withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                ArticleRepository.create(ArticleRemoteSource()).getArticles()
-            })
+            MutableLiveData(
+                withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
+                    val repo = ArticleCachedRepository
+                    repo.getArticles()
+                })
 
     }
 
