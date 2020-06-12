@@ -32,6 +32,9 @@ interface ArticleDao {
     @Delete
     fun deleteArticle(article: Article)
 
+    @Query("DELETE FROM Article")
+    fun clearArticles()
+
     @Query("SELECT * FROM Article")
     fun getArticles(): List<Article>
 
