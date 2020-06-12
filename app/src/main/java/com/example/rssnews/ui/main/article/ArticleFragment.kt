@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,11 +39,21 @@ class ArticleFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(ArticleViewModel::class.java)
 
-        swipeRefresh.setOnRefreshListener{
+        swipeRefresh.setOnRefreshListener {
             swipeRefresh.isRefreshing = true
             CoroutineScope(IO).launch {
-                articles = viewModel.getArticles()
-                swipeRefresh.isRefreshing = false
+                try {
+                    articles = viewModel.refreshArticles()
+                    swipeRefresh.isRefreshing = false
+                    if (!viewModel.isConnected) {
+                        showNoInternetToast()
+                    } else {
+                        showSuccessfulRefreshToast()
+                    }
+                } catch (e: Exception) {
+                    swipeRefresh.isRefreshing = false
+                    showFailRefreshToast()
+                }
             }
         }
 
@@ -55,6 +66,36 @@ class ArticleFragment : Fragment() {
                     adapter = ArticleAdapter(articles)
                 }
             }
+        }
+    }
+
+    private fun showNoInternetToast() {
+        CoroutineScope(Main).launch {
+            Toast.makeText(
+                context,
+                "No internet connection\nShows old news",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun showSuccessfulRefreshToast() {
+        CoroutineScope(Main).launch {
+            Toast.makeText(
+                context,
+                "Feed's updated successful",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun showFailRefreshToast() {
+        CoroutineScope(Main).launch {
+            Toast.makeText(
+                context,
+                "Server error\nShows old news",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

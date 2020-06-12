@@ -10,24 +10,29 @@ import kotlinx.coroutines.withContext
 
 class ArticleViewModel : ViewModel() {
     private var articles: MutableLiveData<List<Article>>? = null
-
-    private suspend fun setArticles() {
-        articles =
-            MutableLiveData(
-                withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                    val repo = ArticleCachedRepository
-                    repo.getArticles()
-                })
-
-    }
+    var isConnected: Boolean = false
+    var lastRefreshTime: String = "never"
 
     suspend fun getArticles(): List<Article> {
         return withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
             if (articles == null)
-                setArticles()
+                refreshArticles()
             articles!!.value ?: listOf()
         }
     }
+
+    suspend fun refreshArticles(): List<Article> {
+        articles =
+            MutableLiveData(
+                withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
+                    val repo = ArticleCachedRepository
+                    isConnected = repo.isNetworkConnected
+                    lastRefreshTime = repo.lastUpdateTime.toString()
+                    repo.getArticles()
+                })
+        return articles!!.value ?: listOf()
+    }
+
 
 }
 
