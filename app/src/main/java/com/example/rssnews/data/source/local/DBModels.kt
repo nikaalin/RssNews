@@ -45,7 +45,7 @@ fun List<ArticleModel>.convertAllToDbModel(): MutableList<Article> = this.map { 
     convertFromModel(i)
 } as MutableList<Article>
 
-private fun convertToModel(serverModel: Article): ArticleModel =
+fun convertToModel(serverModel: Article): ArticleModel =
     ArticleModel(
         serverModel.id,
         serverModel.title,
@@ -53,12 +53,11 @@ private fun convertToModel(serverModel: Article): ArticleModel =
         serverModel.creator,
         Gson().fromJson(serverModel.categories, object : TypeToken<List<String?>?>() {}.type),
         serverModel.description,
-//            SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").parse(serverModel.pubDate)
         LocalDateTime.parse(serverModel.date)
 
     )
 
-private fun convertFromModel(model: ArticleModel): Article =
+fun convertFromModel(model: ArticleModel): Article =
     Article(
         model.id,
         model.title,
@@ -66,7 +65,6 @@ private fun convertFromModel(model: ArticleModel): Article =
         model.creator,
         Gson().toJson(model.categories),
         model.description,
-//            SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").parse(serverModel.pubDate)
         model.date.toString()
 
     )

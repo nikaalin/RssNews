@@ -38,8 +38,15 @@ object ArticleCachedRepository : ArticleSource {
 
     private suspend fun updateRepositoryByRemote() {
         lastUpdateTime = LocalDateTime.now()
+        val oldData = localData
+
         localData = remoteSource.getArticles()
-        localSource.saveArticles(localData!!)
+
+        (localData as MutableList<Article>).forEach {
+            if (!oldData!!.contains(it)) {
+                localSource.saveArticle(it)
+            }
+        }
     }
 
     private suspend fun updateRepositoryByLocal() {

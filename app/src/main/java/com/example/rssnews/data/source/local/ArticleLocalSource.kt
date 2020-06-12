@@ -13,7 +13,12 @@ class ArticleLocalSource(context: Context) : ArticleSource {
     override suspend fun getArticles(): MutableList<Article> =
         articleDao!!.getArticles().convertAllToModel()
 
-    fun saveArticles(articles: List<Article>) {
-        articles.convertAllToDbModel().forEach { articleDao!!.insertArticle(it) }
+    fun saveArticle(article: Article) {
+        articleDao!!.insertArticle(convertFromModel(article))
     }
+
+//    fun saveArticles(articles: List<Article>) {
+//        articleDao!!.deleteArticle()
+//        articles.convertAllToDbModel().forEach { articleDao!!.insertArticle(it) }
+//    }
 }
