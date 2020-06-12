@@ -3,6 +3,7 @@ package com.example.rssnews
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rssnews.ui.main.article.ArticleFragment
+import com.example.rssnews.ui.main.article_detail.DetailFragment
 
 class MainActivity : AppCompatActivity() {
 
