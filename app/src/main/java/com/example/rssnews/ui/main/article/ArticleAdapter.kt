@@ -2,46 +2,45 @@ package com.example.rssnews.ui.main.article
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rssnews.BR
 import com.example.rssnews.R
 import com.example.rssnews.data.Article
-import kotlinx.android.synthetic.main.item.view.*
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 
-class ArticleAdapter(private val list: List<Article>) :
-    RecyclerView.Adapter<ArticleAdapter.ItemViewHolder>() {
+class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ItemViewHolder>() {
+
+    var list: List<Article> = listOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
+
         return ItemViewHolder(
-            inflater,
-            parent
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.article_item_layout,
+                parent,
+                false
+            )
         )
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val movie: Article = list[position]
-        holder.bind(movie)
+        val article: Article = list[position]
+        holder.binding.setVariable(BR.item, article)
     }
 
     override fun getItemCount(): Int = list.size
 
-    class ItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.item, parent, false)) {
 
-        fun bind(article: Article) {
-            itemView.itemTitle.text = article.title
-            itemView.itemAuthor.text = article.creator
-            itemView.itemTime.text = article.date.format(
-                DateTimeFormatter.ofLocalizedDateTime(
-                    FormatStyle.MEDIUM,
-                    FormatStyle.SHORT
-                )
-            )
-        }
+    inner class ItemViewHolder(val binding: ViewDataBinding) :
+        RecyclerView.ViewHolder(binding.root) {
     }
-
 
 }
 

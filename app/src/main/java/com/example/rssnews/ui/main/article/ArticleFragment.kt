@@ -5,16 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rssnews.R
-import com.example.rssnews.data.Article
-import kotlinx.android.synthetic.main.main_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
+import com.example.rssnews.databinding.ArticleListFragmentBinding
+import com.example.rssnews.ui.main.article.RefreshStatus.*
 
 
 class ArticleFragment : Fragment() {
@@ -29,74 +28,48 @@ class ArticleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
-    }
+        viewModel = ViewModelProvider(this).get(ArticleViewModel::class.java)
+        viewModel.init()
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        var articles: List<Article>
+        val binding: ArticleListFragmentBinding =
+            DataBindingUtil.inflate(inflater, R.layout.article_list_fragment, container, false)
+        binding.viewModel = viewModel
 
+        val articleAdapter = ArticleAdapter()
+        with(binding.articlesListRV) {
+            adapter = articleAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
 
-        viewModel = ViewModelProviders.of(this).get(ArticleViewModel::class.java)
+        viewModel.articlesLiveData.observe(viewLifecycleOwner, Observer {
+            articleAdapter.list = it!!
+        })
 
-        swipeRefresh.setOnRefreshListener {
-            swipeRefresh.isRefreshing = true
-            CoroutineScope(IO).launch {
-                try {
-                    articles = viewModel.refreshArticles()
-                    swipeRefresh.isRefreshing = false
-                    if (!viewModel.isConnected) {
-                        showNoInternetToast()
-                    } else {
-                        showSuccessfulRefreshToast()
-                    }
-                } catch (e: Exception) {
-                    swipeRefresh.isRefreshing = false
-                    showFailRefreshToast()
+        viewModel.refreshStatusLiveData.observe(
+            viewLifecycleOwner, Observer {
+                when (it) {
+                    FAIL -> showLongToast(R.string.fail_toast)
+                    SUCCESS -> showLongToast(R.string.success_toast)
+                    NO_CONNECTION -> showLongToast(R.string.noconnection_toast)
+                    null -> return@Observer
                 }
             }
-        }
+        )
 
-        CoroutineScope(IO).launch {
-            articles = viewModel.getArticles()
+        viewModel.isRefreshingLiveData.observe(viewLifecycleOwner, Observer {
+            binding.swipeRefresh.isRefreshing = it
+        })
 
-            launch(Main) {
-                listView.apply {
-                    layoutManager = LinearLayoutManager(activity)
-                    adapter = ArticleAdapter(articles)
-                }
-            }
-        }
+        return binding.root
     }
 
-    private fun showNoInternetToast() {
-        CoroutineScope(Main).launch {
-            Toast.makeText(
-                context,
-                "No internet connection\nShows old news",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+    private fun showLongToast(@StringRes msg: Int) {
+        Toast.makeText(
+            context,
+            msg,
+            Toast.LENGTH_LONG
+        ).show()
     }
-
-    private fun showSuccessfulRefreshToast() {
-        CoroutineScope(Main).launch {
-            Toast.makeText(
-                context,
-                "Feed's updated successful",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    private fun showFailRefreshToast() {
-        CoroutineScope(Main).launch {
-            Toast.makeText(
-                context,
-                "Server error\nShows old news",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
 }
+
+

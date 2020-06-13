@@ -4,4 +4,10 @@
     <string name="default_author">anon</string>
     <string name="default_detail_author">by anon</string>
     <string name="default_time">unknown time</string>
+
+    <string name="success_toast">Feed\'s updated successful</string>
+    <string name="fail_toast">Server error
+Shows old news</string>
+    <string name="noconnection_toast">No internet connection
+Shows old news</string>
 </resources>
