@@ -1,7 +1,5 @@
 package com.example.rssnews.ui.main.article
 
-import android.util.Log
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -16,9 +14,7 @@ import kotlinx.coroutines.withContext
 
 class ArticleViewModel : ViewModel() {
     private var isConnected: Boolean = false
-    var lastRefreshTime: String = "never"
-    var isRefreshing: Boolean = false
-    private var isRefreshingWatcher: MediatorLiveData<Boolean> = MediatorLiveData<Boolean>()
+    private var lastRefreshTime: String = "never"
 
     var articlesLiveData: MutableLiveData<List<Article>?> = MutableLiveData()
     var isRefreshingLiveData: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -26,21 +22,16 @@ class ArticleViewModel : ViewModel() {
 
     var refreshListener = SwipeRefreshLayout.OnRefreshListener {
         isRefreshingLiveData.value = true
-//        isRefreshing = false
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Main).launch {
             try {
-//                isRefreshing = false
-                CoroutineScope(Main).launch {
-                    refreshArticles()
-                    isRefreshingLiveData.value = false
-                    if (!isConnected) {
-                        refreshStatusLiveData.value = RefreshStatus.NO_CONNECTION
-                    } else {
-                        refreshStatusLiveData.value = RefreshStatus.SUCCESS
-                    }
+                refreshArticles()
+                isRefreshingLiveData.value = false
+                if (!isConnected) {
+                    refreshStatusLiveData.value = RefreshStatus.NO_CONNECTION
+                } else {
+                    refreshStatusLiveData.value = RefreshStatus.SUCCESS
                 }
             } catch (e: Exception) {
-                isRefreshing = false
                 CoroutineScope(Main).launch {
                     isRefreshingLiveData.value = false
                     refreshStatusLiveData.value = RefreshStatus.FAIL
@@ -49,12 +40,12 @@ class ArticleViewModel : ViewModel() {
         }
     }
 
+
     fun init() {
         CoroutineScope(Dispatchers.IO).launch {
             refreshArticles()
         }
     }
-
 
     private suspend fun refreshArticles() {
         CoroutineScope(Main).launch {
@@ -67,8 +58,6 @@ class ArticleViewModel : ViewModel() {
                 }
         }
     }
-
-
 }
 
 enum class RefreshStatus {

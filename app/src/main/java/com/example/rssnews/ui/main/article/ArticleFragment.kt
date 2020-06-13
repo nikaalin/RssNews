@@ -12,8 +12,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rssnews.R
+import com.example.rssnews.data.Article
 import com.example.rssnews.databinding.ArticleListFragmentBinding
 import com.example.rssnews.ui.main.article.RefreshStatus.*
+import com.example.rssnews.ui.main.article_detail.DetailFragment
 
 
 class ArticleFragment : Fragment() {
@@ -36,6 +38,14 @@ class ArticleFragment : Fragment() {
         binding.viewModel = viewModel
 
         val articleAdapter = ArticleAdapter()
+        articleAdapter.listener = object : ArticleAdapter.ItemClick {
+            override fun onItemClick(article: Article) {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, DetailFragment.newInstance(article))
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
         with(binding.articlesListRV) {
             adapter = articleAdapter
             layoutManager = LinearLayoutManager(context)

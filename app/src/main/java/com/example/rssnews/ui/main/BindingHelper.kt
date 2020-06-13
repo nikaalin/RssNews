@@ -1,4 +1,4 @@
-package com.example.rssnews.ui.main.article
+package com.example.rssnews.ui.main
 
 import androidx.databinding.BindingConversion
 import java.time.LocalDateTime
@@ -13,3 +13,7 @@ fun convertDateTimeToString(dateTime: LocalDateTime): String =
             FormatStyle.SHORT
         )
     )
+
+@BindingConversion
+fun convertListToString(list: List<String>): String =
+    list.reduce { total, next -> "$total, $next" }.trimEnd(',', ' ')

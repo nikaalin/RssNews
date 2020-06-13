@@ -12,14 +12,19 @@
         <variable
             name="view"
             type="android.view.View" />
+
+        <variable
+            name="listener"
+            type="com.example.rssnews.ui.main.article.ArticleAdapter.ItemClick" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
 
+        android:onClick="@{()->listener.onItemClick(item)}">
 
         <TextView
             android:id="@+id/itemTitle"

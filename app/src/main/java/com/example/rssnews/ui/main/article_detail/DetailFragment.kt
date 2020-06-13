@@ -4,30 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.example.rssnews.R
+import com.example.rssnews.data.Article
+import com.example.rssnews.databinding.ArticleDetailFragmentBinding
 
 
 class DetailFragment : Fragment() {
 
     companion object {
-        fun newInstance() = DetailFragment()
+        lateinit var article: Article
+        fun newInstance(article: Article): DetailFragment {
+            this.article = article
+            return DetailFragment()
+        }
     }
-
-    private lateinit var viewModel: DetailViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.detail_fragment, container, false)
+        val binding: ArticleDetailFragmentBinding =
+            DataBindingUtil.inflate(inflater, R.layout.article_detail_fragment, container, false)
+        binding.article = article
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
-
-    }
 }

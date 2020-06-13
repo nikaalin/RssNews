@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="article"
+            type="com.example.rssnews.data.Article" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/detailLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/detailTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="start"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+
+                android:paddingEnd="16dp"
+                android:text="@{article.title}"
+                android:textSize="40sp"
+                android:textStyle="bold"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/detailTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="start"
+                android:paddingStart="16dp"
+
+                android:paddingEnd="16dp"
+                android:text="@{article.date}"
+                android:textStyle="bold"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/detailTitle" />
+
+            <TextView
+                android:id="@+id/detailAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="start"
+                android:paddingStart="16dp"
+
+                android:paddingEnd="16dp"
+                android:text="@{article.creator}"
+                android:textStyle="italic"
+                android:visibility="@{article.creator == null ? view.GONE : view.VISIBLE}"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/detailTime" />
+
+            <TextView
+                android:id="@+id/detailCategories"
+                android:layout_width="177dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+
+                android:maxWidth="150dp"
+                android:paddingStart="16dp"
+
+                android:paddingTop="4dp"
+                android:paddingEnd="16dp"
+                android:text="@{article.categories}"
+                android:textAlignment="textEnd"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/detailTitle" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+            <TextView
+                android:id="@+id/articleDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+
+                android:paddingEnd="16dp"
+                android:text="@{article.description}"
+                android:textSize="20sp"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/articleLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="16dp"
+
+                android:paddingBottom="16dp"
+                android:text="@{article.link}"
+                android:textSize="20sp"
+                android:textStyle="italic"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</layout>
