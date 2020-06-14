@@ -33,8 +33,8 @@ class Item {
     @field:Element(name = "creator")
     var creator: String? = null
 
-    @field:ElementList(inline = true, required = false)
-    var categories: MutableList<String>? = null
+    @field:ElementList(entry = "category", required = false, inline = true)
+    var categories: List<String?>? = null
 
     @field:Element(name = "description")
     var description: String? = null
@@ -53,8 +53,7 @@ private fun convertToModel(serverModel: Item): Article =
         serverModel.title ?: "",
         serverModel.link ?: "",
         serverModel.creator ?: "",
-        serverModel.categories ?: listOf(""),
+        serverModel.categories?.map { it ?: "" } ?: listOf(),
         serverModel.description ?: "",
-//            SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").parse(serverModel.pubDate)
         LocalDateTime.parse(serverModel.pubDate, DateTimeFormatter.RFC_1123_DATE_TIME)
     )
